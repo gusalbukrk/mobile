@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/home.dart';
 import 'package:mobile/pages/login.dart';
+import 'package:mobile/pages/listings.dart';
 import 'package:mobile/pages/reset_password.dart';
 import 'package:mobile/providers/counter.dart';
 import 'package:provider/provider.dart';
@@ -23,11 +24,12 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        initialRoute: '/',
+        initialRoute: '/listings',
         routes: {
           '/': (context) => const HomePage(title: 'Home'),
           '/login': (context) => LoginPage(),
           '/reset-password': (context) => const ResetPasswordPage(),
+          '/listings': (context) => const ListingsPage(),
         },
       ),
     );
