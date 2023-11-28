@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/components/my_text_field.dart';
+import 'package:mobile/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -9,18 +13,45 @@ class LoginPage extends StatelessWidget {
   final passwordController = TextEditingController();
 
   Future<void> handleButtonPress(BuildContext context) async {
-    print('${emailController.text}:${passwordController.text}');
+    print('${emailController.text} - ${passwordController.text}');
 
+    // both must be placed before any async operation to avoid warning
+    //`Don't use 'BuildContext's across async gaps.`
     final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', emailController.text);
+    final response = await http.get(Uri.parse(
+        'http://192.168.1.6:8081/api/users/search/findByEmailAndPassword?email=${emailController.text}&password=${passwordController.text}'));
 
-    navigator.pushNamed('/');
+    if (response.statusCode == 200) {
+      var user =
+          User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
 
-    // could use instead of `Navigator.of(context).pushNamed('/')`
-    // but it triggers warning `Don't use 'BuildContext's across async gaps.`
-    // Navigator.pushNamed(context, '/');
+      print(user.toJson());
+
+      var role = RegExp(r'.*/(buyer|seller)s/.*')
+          .firstMatch(user.links.self.href)!
+          .group(1)!;
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user', emailController.text);
+      await prefs.setString('role', role);
+
+      navigator.pushNamed('/');
+
+      // could use instead of `Navigator.of(context).pushNamed('/')`
+      // but it triggers warning `Don't use 'BuildContext's across async gaps.`
+      // Navigator.pushNamed(context, '/');
+    } else {
+      // ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Incorrect credentials. Please try again.'),
+        ),
+      );
+
+      passwordController.clear();
+    }
   }
 
   @override

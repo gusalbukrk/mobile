@@ -15,17 +15,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<String?> user;
+  late Future<String?> role;
 
   @override
   void initState() {
     super.initState();
 
-    user = getUser();
+    user = getPref('user');
+    role = getPref('role');
   }
 
-  Future<String?> getUser() async {
+  Future<String?> getPref(String pref) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user');
+    return prefs.getString(pref);
   }
 
   @override
@@ -40,15 +42,18 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FutureBuilder<String?>(
-              future: user,
-              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+            FutureBuilder<List<String?>>(
+              // future: user,
+              future: Future.wait([user, role]),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<String?>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // return CircularProgressIndicator();
                   return const Text('loading....');
                 } else {
+                  var [user, role] = snapshot.data!;
+
                   return Text(
-                    'Hello, ${snapshot.data ?? "visitor"}!',
+                    user == null ? 'Hello, visitor!' : 'Hello, $user ($role)!',
                     style: Theme.of(context).textTheme.titleLarge,
                   );
                 }

@@ -9,9 +9,10 @@ class MyDrawer extends StatelessWidget {
     return prefs.getString('user');
   }
 
-  Future<void> deleteUser() async {
+  Future<void> deleteUserAndRole() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('user');
+    prefs.remove('role');
   }
 
   @override
@@ -71,7 +72,7 @@ class MyDrawer extends StatelessWidget {
                           // otherwise, drawer will be open after back button is pressed
                           Navigator.pop(context);
 
-                          deleteUser();
+                          deleteUserAndRole();
 
                           Navigator.pushNamed(context, '/');
                         },
