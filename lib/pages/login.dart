@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/my_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
 
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  Future<void> handleButtonPress(BuildContext context) async {
+    print('${emailController.text}:${passwordController.text}');
+
+    final navigator = Navigator.of(context);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', emailController.text);
+
+    navigator.pushNamed('/');
+
+    // could use instead of `Navigator.of(context).pushNamed('/')`
+    // but it triggers warning `Don't use 'BuildContext's across async gaps.`
+    // Navigator.pushNamed(context, '/');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +55,8 @@ class LoginPage extends StatelessWidget {
                   height: 25,
                 ),
                 MyTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
+                  controller: emailController,
+                  hintText: 'Email',
                   obscureText: false,
                 ),
                 const SizedBox(
@@ -75,10 +91,7 @@ class LoginPage extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        print(
-                            '${usernameController.text} - ${passwordController.text}');
-                      },
+                      onPressed: () => handleButtonPress(context),
                       child: const Text(
                         'Log In',
                         style: TextStyle(

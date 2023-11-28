@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/my_drawer.dart';
 import 'package:mobile/providers/counter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -13,6 +14,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Future<String?> user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    user = getUser();
+  }
+
+  Future<String?> getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +40,18 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            FutureBuilder<String?>(
+              future: user,
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // return CircularProgressIndicator();
+                  return const Text('loading....');
+                } else {
+                  // Use snapshot.data here
+                  return Text('Hello, ${snapshot.data ?? "visitor"}!');
+                }
+              },
+            ),
             const Text(
               'You have pushed the button this many times:',
             ),
