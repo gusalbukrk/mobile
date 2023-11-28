@@ -47,8 +47,10 @@ class _HomePageState extends State<HomePage> {
                   // return CircularProgressIndicator();
                   return const Text('loading....');
                 } else {
-                  // Use snapshot.data here
-                  return Text('Hello, ${snapshot.data ?? "visitor"}!');
+                  return Text(
+                    'Hello, ${snapshot.data ?? "visitor"}!',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  );
                 }
               },
             ),
