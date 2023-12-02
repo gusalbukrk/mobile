@@ -43,6 +43,7 @@ class Links {
   Category ordersListing;
   Category seller;
   Category tags;
+  Category images;
 
   Links({
     required this.self,
@@ -51,6 +52,7 @@ class Links {
     required this.ordersListing,
     required this.seller,
     required this.tags,
+    required this.images,
   });
 
   factory Links.fromJson(Map<String, dynamic> json) => Links(
@@ -60,6 +62,7 @@ class Links {
         ordersListing: Category.fromJson(json["ordersListing"]),
         seller: Category.fromJson(json["seller"]),
         tags: Category.fromJson(json["tags"]),
+        images: Category.fromJson(json["images"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -69,6 +72,7 @@ class Links {
         "ordersListing": ordersListing.toJson(),
         "seller": seller.toJson(),
         "tags": tags.toJson(),
+        "images": images.toJson(),
       };
 }
 

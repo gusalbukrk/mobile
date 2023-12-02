@@ -38,7 +38,7 @@ class _ListingsPageState extends State<ListingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Product'),
+        title: const Text('Listings'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: FutureBuilder<Listings>(

@@ -89,8 +89,6 @@ class _HomePageState extends State<HomePage> {
 
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            Image.network(
-                'http://192.168.1.6:8081/api/images/findByName/fceed915-0370-4687-923c-8ecf1acdf4ea.jpg'),
           ],
         ),
       ),
