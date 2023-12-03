@@ -65,17 +65,31 @@ class MyDrawer extends StatelessWidget {
                           Navigator.pushNamed(context, '/login');
                         },
                       )
-                    : ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Log Out'),
-                        onTap: () {
-                          // otherwise, drawer will be open after back button is pressed
-                          Navigator.pop(context);
+                    : Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.dashboard),
+                            title: const Text('Dashboard'),
+                            onTap: () {
+                              // otherwise, drawer will be open after back button is pressed
+                              Navigator.pop(context);
 
-                          deleteUserAndRole();
+                              Navigator.pushNamed(context, '/dashboard');
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.logout),
+                            title: const Text('Log Out'),
+                            onTap: () {
+                              // otherwise, drawer will be open after back button is pressed
+                              Navigator.pop(context);
 
-                          Navigator.pushNamed(context, '/');
-                        },
+                              deleteUserAndRole();
+
+                              Navigator.pushNamed(context, '/');
+                            },
+                          ),
+                        ],
                       );
               }
             },

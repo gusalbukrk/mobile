@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/dashboard.dart';
 import 'package:mobile/pages/home.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:mobile/pages/listings.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginPage(),
           '/reset-password': (context) => const ResetPasswordPage(),
           '/listings': (context) => const ListingsPage(),
+          '/dashboard': (context) => const DashboardPage(),
         },
       ),
     );
