@@ -59,56 +59,60 @@ class _ListingPageState extends State<ListingPage> {
         title: const Text('Listing'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: FutureBuilder<dynamic>(
-        future: Future.wait([futureListing, futureImages]),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var [listing, images] = snapshot.data;
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: FutureBuilder<dynamic>(
+          future: Future.wait([futureListing, futureImages]),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var [listing, images] = snapshot.data;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 300,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: images.embedded.images.length,
-                    itemBuilder: (context, index) {
-                      String name = images.embedded.images[index].name;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 300,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images.embedded.images.length,
+                      itemBuilder: (context, index) {
+                        String name = images.embedded.images[index].name;
 
-                      return Image.network(
-                        'http://192.168.1.6:8081/api/images/findByName/${name}',
-                      );
-                    },
+                        return Image.network(
+                          'http://192.168.1.6:8081/api/images/findByName/${name}',
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
                   ),
-                ),
-                Text(
-                  listing.name,
-                  style: const TextStyle(
-                    fontSize: 24,
+                  Text(
+                    listing.name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  '\$${listing.price.toString()}',
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  listing.description,
-                ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Text(
+                    '\$${listing.price.toString()}',
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Text(
+                    listing.description ?? 'No description.',
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
 
-          // By default, show a loading spinner.
-          return const CircularProgressIndicator();
-        },
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }

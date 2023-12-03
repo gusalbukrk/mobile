@@ -14,28 +14,25 @@ class MyTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          hintText: hintText,
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.grey,
-            ),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.blue,
-            ),
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        hintText: hintText,
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.grey,
           ),
         ),
-        onTapOutside: (event) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.blue,
+          ),
+        ),
       ),
+      onTapOutside: (event) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
     );
   }
 }

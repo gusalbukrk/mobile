@@ -63,47 +63,47 @@ class LoginPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 50,
-                ),
-                const Icon(
-                  Icons.login,
-                  size: 100,
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                const Text(
-                  'Welcome back!',
-                  style: TextStyle(
-                    fontSize: 24,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
+                  const Icon(
+                    Icons.login,
+                    size: 100,
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  const Text(
+                    'Welcome back!',
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  MyTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       GestureDetector(
@@ -113,13 +113,10 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Container(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => handleButtonPress(context),
@@ -131,11 +128,11 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-              ],
+                  const SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -41,42 +41,45 @@ class _ListingsPageState extends State<ListingsPage> {
         title: const Text('Listings'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: FutureBuilder<Listings>(
-        future: futureListings,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.embedded.listings.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Text(
-                    snapshot.data!.embedded.listings[index].name,
-                  ),
-                  onTap: () {
-                    String id = snapshot
-                        .data!.embedded.listings[index].links.self.href
-                        .split('/')
-                        .last;
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: FutureBuilder<Listings>(
+          future: futureListings,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data!.embedded.listings.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    child: Text(
+                      snapshot.data!.embedded.listings[index].name,
+                    ),
+                    onTap: () {
+                      String id = snapshot
+                          .data!.embedded.listings[index].links.self.href
+                          .split('/')
+                          .last;
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListingPage(
-                          id: id,
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ListingPage(
+                            id: id,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
+                      );
+                    },
+                  );
+                },
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
 
-          // By default, show a loading spinner.
-          return const CircularProgressIndicator();
-        },
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }
