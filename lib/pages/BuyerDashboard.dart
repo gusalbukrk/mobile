@@ -1,39 +1,85 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mobile/models/listing.dart';
 
 class BuyerDashboard extends StatelessWidget {
   BuyerDashboard({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
 
+  File? _image;
   final titleController = TextEditingController();
   final priceController = TextEditingController();
   final quantityController = TextEditingController();
   final descriptionController = TextEditingController();
 
+  Future<String> createListing() async {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.6:8081/api/listings'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': titleController.text,
+        'price': priceController.text,
+        'quantity': quantityController.text,
+        'description': descriptionController.text,
+      }),
+    );
+
+    var createdListingURI =
+        Listing.fromJson(jsonDecode(response.body)).links.self.href;
+
+    return createdListingURI;
+  }
+
+  Future<String> uploadImage() async {
+    var uri = Uri.parse('http://192.168.1.6:8081/api/images');
+    var request = http.MultipartRequest('POST', uri);
+
+    if (_image != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        _image!.path,
+        contentType: MediaType('image', 'jpeg'),
+      ));
+    }
+
+    var response = await request.send();
+    var id = (await Response.fromStream(response)).body;
+
+    return id;
+  }
+
+  Future<void> associateImageWithLListing(String listing, String image) async {
+    await http.post(
+      Uri.parse('$listing/images'),
+      headers: <String, String>{
+        'Content-Type': 'text/uri-list',
+      },
+      // body: yourUriList.join('\n'),
+      body: 'http://localhost:8081/api/images/$image',
+    );
+  }
+
   Future<void> handleButtonPressed(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final response = await http.post(
-        Uri.parse('http://192.168.1.6:8081/api/listings'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'name': titleController.text,
-          'price': priceController.text,
-          'quantity': quantityController.text,
-          'description': descriptionController.text,
-        }),
-      );
+      var listingURI = await createListing();
+      var imageID = await uploadImage();
+      await associateImageWithLListing(listingURI, imageID);
 
-      if (response.statusCode == 201) {
-        titleController.clear();
-        priceController.clear();
-        quantityController.clear();
-        descriptionController.clear();
-      }
+      // if (response.statusCode == 201) {
+      titleController.clear();
+      priceController.clear();
+      quantityController.clear();
+      descriptionController.clear();
+      // }
     }
   }
 
@@ -42,6 +88,17 @@ class BuyerDashboard extends StatelessWidget {
       return 'Please enter a $name';
     }
     return null;
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      // setState(() {
+      _image = File(image.path);
+      // });
+    }
   }
 
   @override
@@ -94,6 +151,10 @@ class BuyerDashboard extends StatelessWidget {
                   labelText: 'Description',
                 ),
               ),
+            ),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Pick Image'),
             ),
             const SizedBox(
               height: 25,
