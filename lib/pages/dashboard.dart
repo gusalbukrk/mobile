@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/BuyerDashboard.dart';
-import 'package:mobile/pages/SellerDashboard.dart';
+import 'package:mobile/pages/listing_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -27,8 +26,27 @@ class DashboardPage extends StatelessWidget {
               return const SizedBox.shrink();
             } else {
               return snapshot.data.getString('role') == 'buyer'
-                  ? BuyerDashboard()
-                  : const SellerDashboard();
+                  ? Column(
+                      children: [
+                        TextButton.icon(
+                          label: const Text(
+                            'Create listing',
+                          ),
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ListingForm(
+                                    // id: id,
+                                    ),
+                              ),
+                            );
+                          },
+                        )
+                      ],
+                    )
+                  : Container();
             }
           },
         ),
