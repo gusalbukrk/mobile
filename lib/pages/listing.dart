@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/models/images.dart';
 import 'package:mobile/models/listing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListingPage extends StatefulWidget {
   final String id;
@@ -15,6 +17,7 @@ class ListingPage extends StatefulWidget {
 }
 
 class _ListingPageState extends State<ListingPage> {
+  late Future<dynamic> futurePrefs;
   late Future<Listing> futureListing;
   late Future<Images> futureImages;
 
@@ -22,11 +25,17 @@ class _ListingPageState extends State<ListingPage> {
   void initState() {
     super.initState();
 
+    futurePrefs = fetchPrefs();
     futureListing = fetchListing();
     futureImages = fetchImages();
 
     // how to execute something after fetching
     // futureListing.then((value) => print(value.name));
+  }
+
+  Future<dynamic> fetchPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs;
   }
 
   Future<Listing> fetchListing() async {
@@ -62,10 +71,10 @@ class _ListingPageState extends State<ListingPage> {
       body: Padding(
         padding: const EdgeInsets.all(18.0),
         child: FutureBuilder<dynamic>(
-          future: Future.wait([futureListing, futureImages]),
+          future: Future.wait([futurePrefs, futureListing, futureImages]),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var [listing, images] = snapshot.data;
+              var [prefs, listing, images] = snapshot.data;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,6 +124,55 @@ class _ListingPageState extends State<ListingPage> {
                   Text(
                     listing.description ?? 'No description.',
                   ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  if (prefs.getString('role') == 'buyer')
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.shopping_bag),
+                      label: const Text('Buy'),
+                      onPressed: () async {
+                        final response = await http.post(
+                          Uri.parse('http://192.168.1.6:8081/api/orders'),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                          },
+                          body: jsonEncode(<String, String>{
+                            'buyer':
+                                'http://localhost:8081/api/buyers/${prefs.getString('id')!}',
+                            'total': listing.price.toString(),
+                            'date':
+                                DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                          }),
+                        );
+
+                        if (response.statusCode == 201) {
+                          final resp = await http.put(
+                            Uri.parse(
+                                'http://192.168.1.6:8081/api/listings/${widget.id}'),
+                            headers: <String, String>{
+                              'Content-Type': 'application/json; charset=UTF-8',
+                            },
+                            body: jsonEncode(<String, String>{
+                              'name': listing.name.toString(),
+                              'price': listing.price.toString(),
+                              'quantity':
+                                  (int.parse(listing.quantity.toString()) - 1)
+                                      .toString(),
+                              'description': listing.description.toString(),
+                            }),
+                          );
+
+                          print(resp.statusCode);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Order received!'),
+                            ),
+                          );
+                        }
+                      },
+                    ),
                 ],
               );
             } else if (snapshot.hasError) {
