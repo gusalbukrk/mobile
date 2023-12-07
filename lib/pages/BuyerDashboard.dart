@@ -13,7 +13,8 @@ class BuyerDashboard extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
 
-  File? _image;
+  final List<File> _images = [];
+
   final titleController = TextEditingController();
   final priceController = TextEditingController();
   final quantityController = TextEditingController();
@@ -39,40 +40,43 @@ class BuyerDashboard extends StatelessWidget {
     return createdListingURI;
   }
 
-  Future<String> uploadImage() async {
+  Future<List<String>> uploadImage() async {
     var uri = Uri.parse('http://192.168.1.6:8081/api/images');
-    var request = http.MultipartRequest('POST', uri);
 
-    if (_image != null) {
+    List<String> ids = [];
+
+    for (var image in _images) {
+      var request = http.MultipartRequest('POST', uri);
       request.files.add(await http.MultipartFile.fromPath(
         'image',
-        _image!.path,
+        image.path,
         contentType: MediaType('image', 'jpeg'),
       ));
+
+      var response = await request.send();
+      var idString = (await http.Response.fromStream(response)).body;
+      ids.add(idString);
     }
 
-    var response = await request.send();
-    var id = (await Response.fromStream(response)).body;
-
-    return id;
+    return ids;
   }
 
-  Future<void> associateImageWithLListing(String listing, String image) async {
+  Future<void> associateImageWithLListing(
+      String listing, List<String> images) async {
     await http.post(
       Uri.parse('$listing/images'),
       headers: <String, String>{
         'Content-Type': 'text/uri-list',
       },
-      // body: yourUriList.join('\n'),
-      body: 'http://localhost:8081/api/images/$image',
+      body: images.join('\n'),
     );
   }
 
   Future<void> handleButtonPressed(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       var listingURI = await createListing();
-      var imageID = await uploadImage();
-      await associateImageWithLListing(listingURI, imageID);
+      var imagesIDs = await uploadImage();
+      await associateImageWithLListing(listingURI, imagesIDs);
 
       // if (response.statusCode == 201) {
       titleController.clear();
@@ -80,6 +84,12 @@ class BuyerDashboard extends StatelessWidget {
       quantityController.clear();
       descriptionController.clear();
       // }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Listing created!'),
+        ),
+      );
     }
   }
 
@@ -92,12 +102,10 @@ class BuyerDashboard extends StatelessWidget {
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final List<XFile> images = await _picker.pickMultiImage();
 
-    if (image != null) {
-      // setState(() {
-      _image = File(image.path);
-      // });
+    for (var image in images) {
+      _images.add(File(image.path));
     }
   }
 
@@ -109,11 +117,14 @@ class BuyerDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Create listing',
+            const Text('CREATE LISTING',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 )),
+            SizedBox(
+              height: 25,
+            ),
             TextFormField(
               controller: titleController,
               decoration: const InputDecoration(
@@ -152,9 +163,13 @@ class BuyerDashboard extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
+            const SizedBox(
+              height: 25,
+            ),
+            ElevatedButton.icon(
               onPressed: _pickImage,
-              child: Text('Pick Image'),
+              label: const Text('Pick Image'),
+              icon: const Icon(Icons.add_a_photo),
             ),
             const SizedBox(
               height: 25,
