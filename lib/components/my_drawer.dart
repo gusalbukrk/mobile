@@ -47,7 +47,6 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           Expanded(child: Container()),
-          // generate FutureBuilder
           FutureBuilder<String?>(
             future: getUser(),
             builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
