@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/dashboard.dart';
 import 'package:mobile/pages/home.dart';
+import 'package:mobile/pages/signup.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:mobile/pages/listings.dart';
 import 'package:mobile/pages/reset_password.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const HomePage(title: 'Home'),
+          '/signup': (context) => SignupPage(),
           '/login': (context) => LoginPage(),
           '/reset-password': (context) => const ResetPasswordPage(),
           '/listings': (context) => const ListingsPage(),

@@ -54,15 +54,29 @@ class MyDrawer extends StatelessWidget {
                 return const SizedBox.shrink();
               } else {
                 return snapshot.data == null
-                    ? ListTile(
-                        leading: const Icon(Icons.login),
-                        title: const Text('Log In'),
-                        onTap: () {
-                          // otherwise, drawer will be open after back button is pressed
-                          Navigator.pop(context);
+                    ? Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.person),
+                            title: const Text('Sign Up'),
+                            onTap: () {
+                              // otherwise, drawer will be open after back button is pressed
+                              Navigator.pop(context);
 
-                          Navigator.pushNamed(context, '/login');
-                        },
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.login),
+                            title: const Text('Log In'),
+                            onTap: () {
+                              // otherwise, drawer will be open after back button is pressed
+                              Navigator.pop(context);
+
+                              Navigator.pushNamed(context, '/login');
+                            },
+                          ),
+                        ],
                       )
                     : Column(
                         children: [

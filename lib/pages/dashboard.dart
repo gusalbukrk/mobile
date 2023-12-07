@@ -15,7 +15,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   late Future<dynamic> futurePrefs;
-  late Future<Listings> futureListings;
+  late Future<Listings?> futureListings;
 
   @override
   void initState() {
@@ -24,10 +24,12 @@ class _DashboardPageState extends State<DashboardPage> {
     futurePrefs = fetchPrefs();
     futureListings = fetchListings();
 
-    futureListings.then((value) => print(value.embedded.listings.length));
+    futureListings.then((value) => print(value?.embedded.listings.length));
   }
 
-  Future<Listings> fetchListings() async {
+  Future<Listings?> fetchListings() async {
+    if ((await futurePrefs).getString('role') == 'buyer') return null;
+
     var sellerID = (await futurePrefs).getString('id');
 
     final response = await http.get(
