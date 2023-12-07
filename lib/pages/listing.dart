@@ -78,18 +78,30 @@ class _ListingPageState extends State<ListingPage> {
                       itemBuilder: (context, index) {
                         String name = images.embedded.images[index].name;
 
-                        return Image.network(
-                          'http://192.168.1.6:8081/api/images/findByName/${name}',
-                          fit: BoxFit.cover,
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: Image.network(
+                            'http://192.168.1.6:8081/api/images/findByName/${name}',
+                            fit: BoxFit.cover,
+                          ),
                         );
                       },
                     ),
+                  ),
+                  const SizedBox(
+                    height: 25,
                   ),
                   Text(
                     listing.name,
                     style: const TextStyle(
                       fontSize: 24,
                     ),
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Text(
+                    '${listing.quantity.toString()} units left',
                   ),
                   const SizedBox(
                     height: 25,
