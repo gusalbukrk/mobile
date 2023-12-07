@@ -26,7 +26,8 @@ class DashboardPage extends StatelessWidget {
               return const SizedBox.shrink();
             } else {
               return snapshot.data.getString('role') == 'buyer'
-                  ? Column(
+                  ? Container()
+                  : Column(
                       children: [
                         TextButton.icon(
                           label: const Text(
@@ -37,16 +38,29 @@ class DashboardPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ListingForm(
-                                    // id: id,
-                                    ),
+                                builder: (context) => const ListingForm(),
+                              ),
+                            );
+                          },
+                        ),
+                        TextButton.icon(
+                          label: const Text(
+                            'Update listing',
+                          ),
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ListingForm(
+                                  id: '1',
+                                ),
                               ),
                             );
                           },
                         )
                       ],
-                    )
-                  : Container();
+                    );
             }
           },
         ),

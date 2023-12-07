@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<String?> user;
   late Future<String?> role;
+  late Future<String?> id;
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _HomePageState extends State<HomePage> {
 
     user = getPref('user');
     role = getPref('role');
+    id = getPref('id');
   }
 
   Future<String?> getPref(String pref) async {
@@ -44,16 +46,18 @@ class _HomePageState extends State<HomePage> {
           children: [
             FutureBuilder<List<String?>>(
               // future: user,
-              future: Future.wait([user, role]),
+              future: Future.wait([user, role, id]),
               builder: (BuildContext context,
                   AsyncSnapshot<List<String?>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Text('loading....');
                 } else {
-                  var [user, role] = snapshot.data!;
+                  var [user, role, id] = snapshot.data!;
 
                   return Text(
-                    user == null ? 'Hello, visitor!' : 'Hello, $user ($role)!',
+                    user == null
+                        ? 'Hello, visitor!'
+                        : 'Hello, $user ($role - $id)!',
                     style: Theme.of(context).textTheme.titleLarge,
                   );
                 }

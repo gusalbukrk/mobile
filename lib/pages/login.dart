@@ -33,9 +33,12 @@ class LoginPage extends StatelessWidget {
           .firstMatch(user.links.self.href)!
           .group(1)!;
 
+      var id = user.links.self.href.split('/').last;
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('user', emailController.text);
       await prefs.setString('role', role);
+      await prefs.setString('id', id);
 
       navigator.pushNamed('/');
 
