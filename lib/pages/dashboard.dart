@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/models/listings.dart';
+import 'package:mobile/models/orders.dart';
 import 'package:mobile/pages/listing_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +18,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<dynamic> futurePrefs;
   late Future<Listings?> futureListings;
+  late Future<Orders?> futureOrders;
 
   @override
   void initState() {
@@ -23,8 +26,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
     futurePrefs = fetchPrefs();
     futureListings = fetchListings();
+    futureOrders = fetchOrders();
 
-    futureListings.then((value) => print(value?.embedded.listings.length));
+    // futureListings.then((value) => print(value?.embedded.listings.length));
+    futureOrders.then((value) => print(value?.embedded.orders.length));
   }
 
   Future<Listings?> fetchListings() async {
@@ -40,6 +45,21 @@ class _DashboardPageState extends State<DashboardPage> {
           jsonDecode(response.body) as Map<String, dynamic>);
     } else {
       throw Exception('Failed to load listings');
+    }
+  }
+
+  Future<Orders?> fetchOrders() async {
+    if ((await futurePrefs).getString('role') == 'seller') return null;
+
+    var buyerID = (await futurePrefs).getString('id');
+
+    final response = await http
+        .get(Uri.parse('http://192.168.1.6:8081/api/buyers/${buyerID}/orders'));
+
+    if (response.statusCode == 200) {
+      return Orders.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to load orders');
     }
   }
 
@@ -67,15 +87,54 @@ class _DashboardPageState extends State<DashboardPage> {
         padding: const EdgeInsets.all(18.0),
         child: FutureBuilder<dynamic>(
           // future: futurePrefs,
-          future: Future.wait([futurePrefs, futureListings]),
+          future: Future.wait([futurePrefs, futureListings, futureOrders]),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox.shrink();
             } else {
-              var [prefs, listings] = snapshot.data!;
+              var [prefs, listings, orders] = snapshot.data!;
 
               return prefs.getString('role') == 'buyer'
-                  ? Container()
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('ORDERS',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: orders.embedded.orders.length,
+                          itemBuilder: (content, index) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  // orders.embedded.orders[index].date.toString(),
+                                  DateFormat('yyyy-MM-dd').format(orders
+                                      .embedded.orders[index].date
+                                      .toLocal()),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  orders.embedded.orders[index].total
+                                      .toString(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

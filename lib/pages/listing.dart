@@ -141,8 +141,8 @@ class _ListingPageState extends State<ListingPage> {
                             'buyer':
                                 'http://localhost:8081/api/buyers/${prefs.getString('id')!}',
                             'total': listing.price.toString(),
-                            'date':
-                                DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                            'date': DateFormat('yyyy-MM-dd')
+                                .format(DateTime.now().toLocal()),
                           }),
                         );
 
