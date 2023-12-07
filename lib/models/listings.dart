@@ -129,20 +129,21 @@ class Profile {
 
 class ListingsLinks {
   Profile self;
-  Profile profile;
+  Profile? profile;
 
   ListingsLinks({
     required this.self,
-    required this.profile,
+    this.profile,
   });
 
   factory ListingsLinks.fromJson(Map<String, dynamic> json) => ListingsLinks(
         self: Profile.fromJson(json["self"]),
-        profile: Profile.fromJson(json["profile"]),
+        profile:
+            json["profile"] == null ? null : Profile.fromJson(json["profile"]),
       );
 
   Map<String, dynamic> toJson() => {
         "self": self.toJson(),
-        "profile": profile.toJson(),
+        "profile": profile?.toJson(),
       };
 }
